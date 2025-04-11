@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+<body>
+    <div class="simulation max-h-screen ">  
+        <img id="bg" class="max-h-screen w-full absolute" src="assets/bg4 copy.png" alt="" srcset="">
+        <img id="empty-Burette" class="h-[500px] relative -bottom-10 left-40" src="assets/empty-Burette-50ml.png" alt="">
+        <div id="flask" class="relative">
+            <img id="empty-flask" class="h-[200px] relative bottom-40 left-140" src="assets/empty-flask.png" alt="">
+            <img id="filled-flask" class="h-[13px] absolute bottom-40 left-141 opacity-0" src="assets/conical-flask - sol-blue.png" alt="">
+        </div>
+        <div class="relative">
+            <img id="empty-pippete" class="h-[300px] relative bottom-120 left-120" src="assets/empty-pippete.png" alt="">
+            <img id="pipette-water" class="h-[200px] w-[11px] absolute bottom-120 left-122 opacity-0" src="assets/pippete-solution50ml.png" alt="">
+        </div>
+        <img id="distilled-water" class="h-[150px] relative bottom-155 left-180" src="assets/distilled water.png" alt="">
+        <img id="milk-beaker" class="h-[150px] relative bottom-195 left-220" src="assets/empty-beaker.png" alt="">
+        <!-- <img id="milk" class="h-[150px] relative bottom-195 left-220" src="assets/distilled water.png" alt=""> -->
+        <img id="naoh" class="h-[200px] relative bottom-245 -right-260" src="assets/naoh.png" alt="">
+        <div id="popup" class="popup">Distilled water added to the flask!</div>
+        <img id="bg" class="h-[120px] relative" src="assets/funnel.png" alt="" srcset="">
+    </div>
+</body> 
+<script src="script.js"></script>
+</html>

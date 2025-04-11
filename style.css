@@ -1,0 +1,142 @@
+#pipette-water {
+    position: absolute;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+    z-index: 0s;
+    clip-path: inset(100% 0 0 0);
+}
+
+#empty-pippete {
+    z-index: 1;
+}
+
+#distilled-water {
+    z-index: 2;
+}
+
+#empty-flask {
+    z-index: 1;
+}
+
+#filled-flask {
+    z-index: 2;
+    transition: opacity 0.5s ease-in-out;
+    cursor: pointer;
+}
+
+#flask {
+    transform-origin: bottom center;
+}
+
+#filled-flask.show {
+    opacity: 1;
+}
+
+#flask.shake {
+    animation: shakeFlask 2s ease-in-out;
+}
+
+#pipette-water.show {
+    opacity: 1;
+    animation: fillWater 1s ease-in-out forwards;
+}
+
+#pipette-water.pour {
+    opacity: 1;
+    animation: pourWater 1s ease-in-out forwards;
+}
+
+#naoh {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.5s ease-in-out;
+}
+
+#naoh.tilt {
+    animation: tiltNaOH 1s forwards;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 24px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    z-index: 1000;
+}
+
+.popup.show {
+    opacity: 1;
+}
+
+@keyframes fillWater {
+    0% {
+        clip-path: inset(100% 0 0 0);
+    }
+    100% {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes pourWater {
+    0% {
+        clip-path: inset(0 0 0 0);
+    }
+    100% {
+        clip-path: inset(100% 0 0 0);
+    }
+}
+
+@keyframes shakeFlask {
+    0% {
+        transform: rotate(0deg);
+    }
+    10% {
+        transform: rotate(-5deg);
+    }
+    20% {
+        transform: rotate(5deg);
+    }
+    30% {
+        transform: rotate(-5deg);
+    }
+    40% {
+        transform: rotate(5deg);
+    }
+    50% {
+        transform: rotate(-5deg);
+    }
+    60% {
+        transform: rotate(5deg);
+    }
+    70% {
+        transform: rotate(-5deg);
+    }
+    80% {
+        transform: rotate(5deg);
+    }
+    90% {
+        transform: rotate(-5deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes tiltNaOH {
+    0% {
+        transform: translate(var(--x), var(--y)) rotate(0deg);
+    }
+    50% {
+        transform: translate(var(--x), var(--y)) rotate(-90deg);
+    }
+    100% {
+        transform: translate(var(--x), var(--y)) rotate(-90deg);
+    }
+}
