@@ -68,7 +68,7 @@ naoh.addEventListener('click', ()=> {
                         // naohLiquid.style.height= '0px'
                         // Return NaOH to initial position
                         setTimeout(() => {
-                            naohLiquid.style.display = 'none'
+                            // naohLiquid.style.display = 'none'
                             naoh.classList.remove('tilt');
                             naoh.style.transform = `translate(0px, 0px)`;
                         }, 1000);
@@ -130,8 +130,8 @@ pipette.addEventListener('click', () => {
         const waterRect = distilledWater.getBoundingClientRect();
         const pipetteRect = pipette.getBoundingClientRect();
         
-        const finalX = waterRect.left - pipetteRect.left + 55;
-        const finalY = waterRect.top - pipetteRect.top - 100;
+        const finalX = waterRect.left - pipetteRect.left + 40;
+        const finalY = waterRect.top - pipetteRect.top - 80;
         
         pipette.style.transition = 'transform 0.5s ease-in-out';
         pipetteWater.style.transition = 'transform 0.5s ease-in-out';
@@ -154,8 +154,8 @@ pipette.addEventListener('click', () => {
                         
                         // After filling move to flask
                         const flaskRect = emptyFlask.getBoundingClientRect();
-                        const flaskX = flaskRect.left - pipetteRect.left + 37;
-                        const flaskY = flaskRect.top - pipetteRect.top - 100;
+                        const flaskX = flaskRect.left - pipetteRect.left + 30;
+                        const flaskY = flaskRect.top - pipetteRect.top - 80;
                         
                         setTimeout(() => {
                             pipette.style.transform = `translate(${flaskX}px, -200px)`;
@@ -198,8 +198,8 @@ pipette.addEventListener('click', () => {
         const milkRect = milkBeaker.getBoundingClientRect();
         const pipetteRect = pipette.getBoundingClientRect();
         
-        const finalX = milkRect.left - pipetteRect.left + 55;
-        const finalY = milkRect.top - pipetteRect.top - 100;
+        const finalX = milkRect.left - pipetteRect.left + 45;
+        const finalY = milkRect.top - pipetteRect.top - 80;
         
         pipette.style.transition = 'transform 0.5s ease-in-out';
         pipetteMilk.style.transition = 'transform 0.5s ease-in-out';
@@ -224,8 +224,8 @@ pipette.addEventListener('click', () => {
                         
                         // After filling, move to flask
                         const flaskRect = filledFlask.getBoundingClientRect();
-                        const flaskX = flaskRect.left - pipetteRect.left + 38;
-                        const flaskY = flaskRect.top - pipetteRect.top - 250;
+                        const flaskX = flaskRect.left - pipetteRect.left + 30;
+                        const flaskY = flaskRect.top - pipetteRect.top - 150;
                         
                         setTimeout(() => {
                             pipette.style.transform = `translate(${flaskX}px, -200px)`;
@@ -250,9 +250,9 @@ pipette.addEventListener('click', () => {
                                         setTimeout(() => {
                                             popup.classList.remove('show');
                                         }, 1000);
-                                    }, 500);
-                                }, 500);
-                            }, 500);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000);
                         }, 1000);
                     }, 500);
                 }, 500);

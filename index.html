@@ -1,34 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chemistry Simulation</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="simulation max-h-screen ">  
-        <img id="bg" class="max-h-screen w-full absolute" src="assets/bgImageFood.png" alt="" srcset="">
-        <img id="empty-Burette" class="h-[65vh] relative -bottom-40 left-20" src="assets/empty-Burette-50ml.png" alt="">
-        <img id="funnel" class="h-[16vh] -top-75 left-35.5 relative" src="assets/funnel.png" alt="" srcset="">
-        <div id="flask" class="relative">
-            <img id="empty-flask" class="h-[22vh] relative bottom-30 left-140" src="assets/empty-flask.png" alt="">
-            <img id="filled-flask" class="h-[1.44vh] absolute bottom-30 left-141 opacity-0" src="assets/conical-flask - sol-blue.png" alt="">
-        </div>
-        <div class="relative">
-            <img id="empty-pippete" class="h-[26vh] relative bottom-75 left-120" src="assets/empty-pippete.png" alt="">
-            <img id="pipette-water" class="h-[20vh] w-[0.6vw] absolute bottom-75 left-121 opacity-0" src="assets/pippete-solution50ml.png" alt="">
-            <img id="pipette-milk" class="h-[20vh] w-[0.6vw] absolute bottom-75 left-121" src="assets/pippete-solution50ml.png" alt="">
-        </div>
-        <img id="distilled-water" class="h-[25vh] relative bottom-110 left-175" src="assets/3D-DistilledWater.png" alt="">
-        <img id="milk-beaker" class="h-[25vh] relative bottom-150 left-210" src="assets/3D-milkBeaker.png" alt="">
-        <img id="cylinder" class="h-[25vh] relative bottom-195 -right-250" src="assets/measuring cylinder 10ml.png" alt="">
-        <div id="naoh-liquid"></div>
-        <img id="naoh" class="h-[25vh] relative bottom-235 -right-275" src="assets/naoh.png" alt="">
-        <div id="popup" class="popup">Distilled water added to the flask!</div>
+<body class="overflow-hidden">
+  <div class="simulation relative w-full h-screen overflow-hidden max-h-screen">
+    
+    <!-- Background -->
+    <img id="bg" src="assets/bgImageFood.png" alt="Background" class="absolute inset-0 w-full h-full object-cover z-0" />
+
+    <!-- Burette and Funnel -->
+    <div class="absolute top-[30%] left-[5%] z-10">
+      <img id="empty-Burette" src="assets/empty-Burette-50ml.png" alt="Burette" class="h-[60vh]" />
+      <img id="funnel" src="assets/funnel.png" alt="Funnel" class="h-[15vh] absolute top-10 left-[46%] -translate-x-1/2 -translate-y-full" />
     </div>
-</body> 
-<script src="script.js"></script>
+
+    <!-- Flask -->
+    <div id="flask" class="absolute bottom-[15%] left-[45%] z-10">
+      <img id="empty-flask" src="assets/empty-flask.png" alt="Empty Flask" class="h-[18vh]" />
+      <img id="filled-flask" src="assets/conical-flask - sol-blue.png" alt="Filled Flask" class="h-[3vh] absolute bottom-0 left-0 opacity-0" />
+    </div>
+
+    <!-- Pipette -->
+    <div class="absolute bottom-[15%] left-[35%] z-10">
+      <img id="empty-pippete" src="assets/empty-pippete.png" alt="Empty Pipette" class="h-[20vh]" />
+      <img id="pipette-water" src="assets/pippete-solution50ml.png" alt="Pipette Water" class="h-[16vh] w-[0.5vw] absolute bottom-0 left-1/4 opacity-0 z-1" />
+      <img id="pipette-milk" src="assets/pippete-solution50ml.png" alt="Pipette Milk" class="h-[16vh] w-[0.5vw] absolute bottom-0 left-1/4" />
+    </div>
+
+    <!-- Beakers and Cylinder -->
+    <img id="distilled-water" src="assets/3D-DistilledWater.png" alt="Distilled Water" class="absolute bottom-[12%] left-[60%] h-[20vh] z-10" />
+    <img id="milk-beaker" src="assets/3D-milkBeaker.png" alt="Milk Beaker" class="absolute bottom-[12%] left-[70%] h-[20vh] z-10" />
+    
+   <div class="relative -bottom-[100%] h-[25vh]">
+  <!-- Measuring Cylinder Image -->
+  <img id="cylinder" 
+       src="assets/measuring cylinder 10ml.png" 
+       alt="Measuring Cylinder" 
+       class="absolute left-[80%] bottom-[160%] h-full z-10" />
+
+  <!-- NaOH Liquid inside the Cylinder -->
+  <div id="naoh-liquid" 
+       class="absolute left-[80.6%] mb-[10%]">
+  </div>
+</div>
+    <!-- NaOH -->
+    <img id="naoh" src="assets/naoh.png" alt="NaOH" class="absolute top-[40%] left-[90%] h-[20vh] z-10" />
+
+    <!-- Popup -->
+    <div id="popup" class="popup absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded shadow-md hidden z-20">
+      Distilled water added to the flask!
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>
