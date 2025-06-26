@@ -21,6 +21,15 @@
     z-index: 10;
 }
 
+#burette-sol {
+  transition: clip-path 2s ease-in-out;
+  clip-path: inset(100% 0 0 0); /* hidden initially */
+}
+
+#burette-sol.fill {
+  clip-path: inset(0% 0 0 0);   /* gradually revealed */
+}
+
 #empty-flask {
     z-index: 1;
 }
@@ -64,7 +73,7 @@
 #naoh {
     position: relative;
     z-index: 1;
-    transition: transform 0.5s ease-in-out;
+    transition: transform 1s ease-in-out;
 }
 
 #naoh.tilt {
@@ -81,8 +90,26 @@
     bottom: 0;
     /* left: 0; */
     z-index: 100;
-    transition: height 0.5s ease-in-out;
+    transition: height 2s ease-in-out;
     /* display: none;  */
+}
+
+#naoh-liquid.empty {
+  animation: drainCylinder 3s steps(10) forwards;
+}
+
+@keyframes drainCylinder {
+  0%   { clip-path: inset(0% 0 0 0); }
+  10%  { clip-path: inset(10% 0 0 0); }
+  20%  { clip-path: inset(20% 0 0 0); }
+  30%  { clip-path: inset(30% 0 0 0); }
+  40%  { clip-path: inset(40% 0 0 0); }
+  50%  { clip-path: inset(50% 0 0 0); }
+  60%  { clip-path: inset(60% 0 0 0); }
+  70%  { clip-path: inset(70% 0 0 0); }
+  80%  { clip-path: inset(80% 0 0 0); }
+  90%  { clip-path: inset(90% 0 0 0); }
+  100% { clip-path: inset(100% 0 0 0); }
 }
 
 .popup {
@@ -169,3 +196,36 @@
         transform: translate(var(--x), var(--y)) rotate(-90deg);
     }
 }
+
+#phenol-drop {
+  /* width: 10px; */
+  /* height: 10px; */
+  animation: dropFall 1s ease-in-out;
+}
+
+.show {
+  display: block !important;
+}
+
+@keyframes dropFall {
+  0% { opacity: 0; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(50px); }
+  100% { opacity: 0; transform: translateY(100px); }
+}
+
+#cylinder-container.tilt {
+  animation: tiltcylinder 1s forwards;
+}
+
+@keyframes tiltcylinder {
+    0% {
+        transform: translate(var(--x), var(--y)) rotate(0deg);
+    }
+    50% {
+        transform: translate(var(--x), var(--y)) rotate(-20deg);
+    }
+    100% {
+        transform: translate(var(--x), var(--y)) rotate(-20deg);
+    }
+}
+

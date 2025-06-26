@@ -8,35 +8,51 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="overflow-hidden">
+  <div class="bg-blue-400 flex items-center">
+    <h3 class="text-xl font-bold p-2 ">Instructions : </h3>
+    <h3 class="text-lg text-white"  id="instruction-text">Click on the 'start' button to start the Experiment</h3>
+  </div>
   <div class="simulation relative w-full h-screen overflow-hidden max-h-screen">
     
     <!-- Background -->
     <img id="bg" src="assets/bgImageFood.png" alt="Background" class="absolute inset-0 w-full h-full object-cover z-0" />
 
     <!-- Burette and Funnel -->
-    <div class="absolute top-[30%] left-[5%] z-10">
-      <img id="empty-Burette" src="assets/empty-Burette-50ml.png" alt="Burette" class="h-[60vh]" />
-      <img id="funnel" src="assets/funnel.png" alt="Funnel" class="h-[15vh] absolute top-10 left-[46%] -translate-x-1/2 -translate-y-full" />
-    </div>
+<div class="absolute top-[30%] left-[5%] z-10">
+  <img id="empty-Burette" src="assets/empty-Burette-50ml.png" alt="Burette" class="h-[60vh]" />
+
+  <!-- Clip-path-based wrapper for filling effect -->
+  <div id="burette-fill-container" class="absolute top-0 left-[43.2%] w-[1vw] h-[30vh] overflow-hidden">
+    <img id="burette-sol" src="assets/Burette-solution.png"
+         alt="Burette Solution"
+         class="w-full h-full absolute bottom-0 clip-hidden z-10" />
+  </div>
+
+  <img id="funnel" src="assets/funnel.png" alt="Funnel"
+       class="h-[15vh] absolute top-10 left-[46%] -translate-x-1/2 -translate-y-full" />
+</div>
+
 
     <!-- Flask -->
     <div id="flask" class="absolute bottom-[15%] left-[45%] z-10">
       <img id="empty-flask" src="assets/empty-flask.png" alt="Empty Flask" class="h-[18vh]" />
-      <img id="filled-flask" src="assets/conical-flask - sol-blue.png" alt="Filled Flask" class="h-[3vh] absolute bottom-0 left-0 opacity-0" />
+      <img id="filled-flask" src="assets/Flask-Milk.png" alt="Filled Flask" class=" w-[17vw] absolute -bottom-[24%] left-0 opacity-0" />
     </div>
 
     <!-- Pipette -->
     <div class="absolute bottom-[15%] left-[35%] z-10">
       <img id="empty-pippete" src="assets/empty-pippete.png" alt="Empty Pipette" class="h-[20vh]" />
       <img id="pipette-water" src="assets/pippete-solution50ml.png" alt="Pipette Water" class="h-[16vh] w-[0.5vw] absolute bottom-0 left-1/4 opacity-0 z-1" />
-      <img id="pipette-milk" src="assets/pippete-solution50ml.png" alt="Pipette Milk" class="h-[16vh] w-[0.5vw] absolute bottom-0 left-1/4" />
+      <img id="pipette-milk" src="assets/pippete-solution50ml-grey.png" alt="Pipette Milk" class="h-[16vh] w-[0.5vw] absolute bottom-0 left-1/4" />
     </div>
 
     <!-- Beakers and Cylinder -->
-    <img id="distilled-water" src="assets/3D-DistilledWater.png" alt="Distilled Water" class="absolute bottom-[12%] left-[60%] h-[20vh] z-10" />
+    <img id="phenolphthelen-bottle" src="assets/phenolphthelein-bottle.png" alt="phenolphthelein-bottle" class="absolute bottom-[15%] left-[60%] h-[20vh] z-10" />
+    <img id="phenolphthelein-cap" src="assets/phenolphthelein-cap.png" alt="phenolphthelein-cap" class="absolute bottom-[20.5%] left-[61.2%] h-[20vh] z-10" />
+    <img id="phenol-drop" src="assets/drop.png" class="absolute h-[5vh] bottom-[40%] left-[46.8%] hidden" />
     <img id="milk-beaker" src="assets/3D-milkBeaker.png" alt="Milk Beaker" class="absolute bottom-[12%] left-[70%] h-[20vh] z-10" />
     
-   <div class="relative -bottom-[100%] h-[25vh]">
+   <div id="cylinder-container" class="relative -bottom-[100%] h-[25vh]">
   <!-- Measuring Cylinder Image -->
   <img id="cylinder" 
        src="assets/measuring cylinder 10ml.png" 
@@ -45,17 +61,24 @@
 
   <!-- NaOH Liquid inside the Cylinder -->
   <div id="naoh-liquid" 
-       class="absolute left-[80.6%] mb-[10%]">
+       class="absolute left-[80.6%] mb-[6.3%]  ">
   </div>
 </div>
     <!-- NaOH -->
     <img id="naoh" src="assets/naoh.png" alt="NaOH" class="absolute top-[40%] left-[90%] h-[20vh] z-10" />
-
-    <!-- Popup -->
-    <div id="popup" class="popup absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded shadow-md hidden z-20">
-      Distilled water added to the flask!
-    </div>
   </div>
+
+ <div id="objective" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+bg-black bg-opacity-60 text-white text-6xl font-semibold text-center w-screen px-60 py-40 
+opacity-0 transition-opacity duration-500 ease-in pointer-events-none hidden z-50">
+  To determine the titratable acidity of the milk
+</div>
+
+
+
+<button id="start-btn" class="bg-blue-600 text-white font-semibold px-5 py-2 rounded-xl absolute bottom-0 right-0 mb-2 mr-5 hover:bg-blue-700">
+  Start
+</button>
 
   <script src="script.js"></script>
 </body>
