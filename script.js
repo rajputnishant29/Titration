@@ -20,6 +20,8 @@ let pipetteClickable = false;
 let capClickable = false;
 let naohClickable = false;
 let cylinderClickable = false;
+let flaskClickable = false;
+let nobClickable = false;
 
 
 startBtn.addEventListener('click', async () => {
@@ -46,8 +48,7 @@ startBtn.addEventListener('click', async () => {
 
 pipette.addEventListener("click", async () => {
   if (!pipetteClickable) return;
-
-  pipetteClickable = false; // prevent double click
+  pipetteClickable = false;
 
   objective.classList.remove('opacity-100');
   objective.classList.add('opacity-0');
@@ -73,7 +74,7 @@ cap.addEventListener("click", async () => {
 });
 
 
-function wait(ms) {
+ function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -118,6 +119,11 @@ async function step1_addMilkToFlask() {
 
   flaskWithMilk.classList.add("show");
 
+  // First move up
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${flaskX}px, -200px)`;
+  await wait(1000);
+
+  // Then move to initial position
   pipette.style.transform = pipetteMilk.style.transform = `translate(0px, 0px)`;
   await wait(1000);
 }
@@ -203,11 +209,28 @@ naoh.addEventListener('click', async () => {
   naohLiquid.style.display = 'block';
   naohLiquid.style.bottom = `${cylinderRect.bottom - 408}px`;
   naohLiquid.style.left = `${cylinderRect.left + 13}px`;
+  
+  // Add stable filling stream for NaOH
+  const naohStream = document.createElement('div');
+  naohStream.style.cssText = `
+    position: absolute;
+    width: 12px;
+    height: 50px;
+    background: linear-gradient(to bottom, rgba(178, 213, 227, 0.8), rgba(178, 213, 227, 0.4));
+    left: ${cylinderRect.left + 30}px;
+    top: ${cylinderRect.top - 20}px;
+    z-index: 1000;
+  `;
+  document.body.appendChild(naohStream);
+  
   await wait(1000)
 
   naohLiquid.style.height = '120px';
   naohLiquid.style.width = '33px';
   await wait(2000);
+  
+  // Remove the stream animation
+  naohStream.remove();
 
 
   // Step 5: Reset path in reverse
@@ -238,7 +261,7 @@ cylinderContainer.addEventListener('click', async () => {
   const cylinderRect = cylinder.getBoundingClientRect();
   const funnelRect = funnel.getBoundingClientRect();
 
-  const finalX = funnelRect.right - cylinderRect.right + 160;  // adjust for alignment
+  const finalX = funnelRect.right - cylinderRect.right + 160;
   const finalY = funnelRect.top - cylinderRect.top - 20;
 
   if (!cylinderClickable || step !== 4) return; 
@@ -290,11 +313,70 @@ await wait(2000);
   cylinderContainer.style.transform = `translate(0px, 0px)`;
   await wait(1000);
 
-  instructionText.textContent = "aage ka baad me btata hoon ";
-  step++;
-
-  cylinderClickable = true;
+  // instructionText.textContent = "aage ka baad me btata hoon ";
+  // Next: Move flask under the burette
+  instructionText.textContent = "Click on the flask to settle it under the burette";
+  step = 7;
+  cylinderClickable = false;
+  flaskClickable = true;
 });
 
+// flask to settle under burette -------------------------------------------------
+flask.addEventListener('click', async () => {
+  if (!flaskClickable || step !== 7) return;
+  flaskClickable = false;
 
+  await step7_moveFlaskUnderBurette();
 
+  // instructionText.textContent = "Flask ab burette ke neeche set ho gaya hai";
+  step = 8;
+  instructionText.textContent = "Click on the burette knob to start dropping";
+  nobClickable = true;
+});
+
+async function step7_moveFlaskUnderBurette() {
+  const burette = document.getElementById('empty-Burette');
+  const buretteRect = burette.getBoundingClientRect();
+  const flaskRect = flask.getBoundingClientRect();
+
+  // Align flask center under burette center, slightly below the tip
+  const targetX = (buretteRect.left + buretteRect.width * 0.5) - (flaskRect.left + flaskRect.width * 0.5);
+  const targetY = (buretteRect.bottom + 0) - flaskRect.bottom;
+
+  flask.style.transition = 'transform 1s ease-in-out';
+  flask.style.transform = `translate(${targetX}px, ${targetY}px)`;
+  await wait(1000);
+}
+
+// Step 8: Open burette knob and start drops -------------------------------------
+const buretteNob = document.getElementById('burette-nob');
+const buretteDrop = document.getElementById('burette-drop');
+const emptyBurette = document.getElementById('empty-Burette');
+
+buretteNob.addEventListener('click', async () => {
+  if (!nobClickable || step !== 8) return;
+  nobClickable = false;
+
+  // Open state
+  buretteNob.classList.add('open');
+  // Change burette image to show filling state
+  emptyBurette.src = 'assets/Burette-filling.png';
+  // Start drops animation
+  buretteDrop.classList.add('show');
+
+  // Keep dropping for a few seconds to simulate flow
+  await wait(4000);
+
+  // Optionally stop drops (comment out if continuous needed)
+  buretteDrop.classList.remove('show');
+  buretteNob.classList.remove('open');
+
+  // Change flask image to show titrated state
+  const emptyFlask = document.getElementById('empty-flask');
+  const filledFlask = document.getElementById('filled-flask');
+  emptyFlask.src = 'assets/conical-flask - titrated.png';
+  filledFlask.classList.remove('show');
+
+  instructionText.textContent = "Drops completed. Next step...";
+  step++;
+});
