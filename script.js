@@ -14,6 +14,7 @@ const cylinder = document.getElementById("cylinder");
 const cylinderContainer = document.getElementById('cylinder-container');
 const funnel = document.getElementById('funnel')
 const buretteSol = document.getElementById('burette-sol');
+const tooltip = document.getElementById('hover-tooltip');
 
 let step = 0;
 let pipetteClickable = false;
@@ -22,7 +23,6 @@ let naohClickable = false;
 let cylinderClickable = false;
 let flaskClickable = false;
 let nobClickable = false;
-
 
 startBtn.addEventListener('click', async () => {
   if (step === 0) {
@@ -45,6 +45,30 @@ startBtn.addEventListener('click', async () => {
     pipetteClickable = true;
   }
 });
+
+// Hover labels ---------------------------------------------------------------
+if (tooltip) {
+  const hoverTargets = document.querySelectorAll('.hover-item');
+  hoverTargets.forEach((el) => {
+    const label = el.dataset.label || el.alt || el.getAttribute('aria-label') || 'Object';
+
+    el.addEventListener('mouseenter', () => {
+      tooltip.textContent = label;
+      tooltip.classList.remove('hidden');
+    });
+
+    el.addEventListener('mousemove', (event) => {
+      const offsetX = 12;
+      const offsetY = 12;
+      tooltip.style.left = `${event.clientX + offsetX}px`;
+      tooltip.style.top = `${event.clientY + offsetY}px`;
+    });
+
+    el.addEventListener('mouseleave', () => {
+      tooltip.classList.add('hidden');
+    });
+  });
+}
 
 pipette.addEventListener("click", async () => {
   if (!pipetteClickable) return;
@@ -209,28 +233,13 @@ naoh.addEventListener('click', async () => {
   naohLiquid.style.display = 'block';
   naohLiquid.style.bottom = `${cylinderRect.bottom - 408}px`;
   naohLiquid.style.left = `${cylinderRect.left + 13}px`;
-  
-  // Add stable filling stream for NaOH
-  const naohStream = document.createElement('div');
-  naohStream.style.cssText = `
-    position: absolute;
-    width: 12px;
-    height: 50px;
-    background: linear-gradient(to bottom, rgba(178, 213, 227, 0.8), rgba(178, 213, 227, 0.4));
-    left: ${cylinderRect.left + 30}px;
-    top: ${cylinderRect.top - 20}px;
-    z-index: 1000;
-  `;
-  document.body.appendChild(naohStream);
-  
-  await wait(1000)
 
   naohLiquid.style.height = '120px';
   naohLiquid.style.width = '33px';
   await wait(2000);
   
-  // Remove the stream animation
-  naohStream.remove();
+  // // Remove the stream animation
+  // naohStream.remove();
 
 
   // Step 5: Reset path in reverse
@@ -253,7 +262,6 @@ naoh.addEventListener('click', async () => {
   instructionText.textContent = "Click on the measuring cylinder to fill NaOH into the burette";
   step++;
   cylinderClickable = true;
-    
 });
 
 //cylinder to the burette---------------------------------------------------------------------------------------
@@ -296,7 +304,14 @@ void buretteSol.offsetWidth;
 // Animate opacity to simulate filling
 naohLiquid.classList.add('empty');  
 buretteSol.classList.add('fill');
+// Drain cylinder content while burette fills
+naohLiquid.style.transition = 'height 1.6s linear, opacity 1.6s linear';
+naohLiquid.style.height = '0px';
+naohLiquid.style.opacity = '0';
 await wait(2000);
+// Ensure cylinder appears empty after pour
+naohLiquid.style.display = 'none';
+naohLiquid.style.width = '0px';
 
   // Step 6: Reverse Path (un-tilt + backtrack)
   cylinderContainer.classList.remove('tilt');
@@ -364,8 +379,14 @@ buretteNob.addEventListener('click', async () => {
   // Start drops animation
   buretteDrop.classList.add('show');
 
+  // While drops are pouring, reduce burette solution level
+  const pourDurationMs = 6000; // sync with wait below
+  buretteSol.style.transition = `clip-path ${pourDurationMs}ms linear`;
+  // Reduce visible fill from bottom by ~60%
+  buretteSol.style.clipPath = 'inset(40% 0 0 0)';
+
   // Keep dropping for a few seconds to simulate flow
-  await wait(4000);
+  await wait(pourDurationMs);
 
   // Optionally stop drops (comment out if continuous needed)
   buretteDrop.classList.remove('show');
@@ -377,6 +398,34 @@ buretteNob.addEventListener('click', async () => {
   emptyFlask.src = 'assets/conical-flask - titrated.png';
   filledFlask.classList.remove('show');
 
-  instructionText.textContent = "Drops completed. Next step...";
+  instructionText.textContent = "Completed";
   step++;
+  // Show Observation table at the end
+  showObservation();
 });
+
+// Show observation overlay and compute result
+function showObservation() {
+  const obs = document.getElementById('observation');
+  const closeBtn = document.getElementById('close-observation');
+  const obsV = document.getElementById('obs-v');
+  const obsN = document.getElementById('obs-n');
+  const obsW = document.getElementById('obs-w');
+  const resultEl = document.getElementById('obs-result');
+
+  // Read values (fallback defaults shown in table)
+  const V = parseFloat((obsV?.textContent || '0.20').trim());
+  const N = parseFloat((obsN?.textContent || '0.1').trim());
+  const W = parseFloat((obsW?.textContent || '10').trim());
+
+  // Formula: (0.9 × V × N) / W
+  const acidity = (0.9 * V * N) / W;  // already % lactic acid
+  const acidityPct = acidity.toFixed(3); 
+
+  if (resultEl) resultEl.textContent = `${acidityPct}%`;
+
+  if (obs) obs.classList.remove('hidden');
+  if (closeBtn) {
+    closeBtn.onclick = () => obs && obs.classList.add('hidden');
+  }
+}
