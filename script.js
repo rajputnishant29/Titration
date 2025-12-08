@@ -16,6 +16,39 @@ const funnel = document.getElementById('funnel')
 const buretteSol = document.getElementById('burette-sol');
 const tooltip = document.getElementById('hover-tooltip');
 
+let naohTargetHeight = 0;
+
+function positionNaohLiquid(fillRatio = 0.65) {
+  if (!naohLiquid || !cylinder) return null;
+  const cylinderRect = cylinder.getBoundingClientRect();
+  const containerRect = cylinderContainer.getBoundingClientRect();
+
+  const liquidHeight = Math.max(60, cylinderRect.height * fillRatio);
+  const liquidWidth = Math.max(24, cylinderRect.width * 0.55);
+
+
+  const rawBottom = containerRect.bottom - cylinderRect.bottom;
+  const bottom = Math.max(0, rawBottom - 70); // negative offset ताकि base को छुए
+  const left = (cylinderRect.left + (cylinderRect.width - liquidWidth) / 2) - containerRect.left;
+
+  naohLiquid.style.position = 'absolute';
+  naohLiquid.style.bottom = `${bottom}px`;
+  naohLiquid.style.left = `${left}px`;
+  naohLiquid.style.width = `${liquidWidth}px`;
+
+  naohTargetHeight = liquidHeight;
+  return { height: liquidHeight, width: liquidWidth, bottom, left };
+}
+
+window.addEventListener('resize', () => {
+  if (naohLiquid && naohLiquid.style.display !== 'none') {
+    positionNaohLiquid(); // responsive repositioning on resize
+    if (naohTargetHeight) {
+      naohLiquid.style.height = `${naohTargetHeight}px`;
+    }
+  }
+});
+
 let step = 0;
 let pipetteClickable = false;
 let capClickable = false;
@@ -34,7 +67,7 @@ startBtn.addEventListener('click', async () => {
     step++;
   } else if (step === 1) {
     // Hide objective and start animation
-    instructionText.textContent = "Click on the pipette to fill and pour the milk.";
+    instructionText.textContent = "Click on the Pipette to fill 10ml milk and pour it into flask.";
     objective.classList.remove('opacity-100');
     objective.classList.add('opacity-0');
 
@@ -82,7 +115,7 @@ pipette.addEventListener("click", async () => {
   await step1_addMilkToFlask();
 
   startBtn.disabled = false;
-  instructionText.textContent = "Click on the phenolphethelien cap to pour drops into flask";
+  instructionText.textContent = "Click on the Phenolphthalein cap to pour drops into flask";
   startBtn.textContent = 'Next';
   step++;
   capClickable = true;
@@ -92,7 +125,7 @@ cap.addEventListener("click", async () => {
     if (!capClickable || step !== 2) return;
     capClickable = false;
     await step2_addPhenolphthalein();
-    instructionText.textContent = "Click on the naoh bottle to fill NaOH into the measuring cylinder";
+    instructionText.textContent = "Click on the NaOH bottle to fill NaOH into the measuring cylinder";
     step++;
     naohClickable = true
 });
@@ -231,11 +264,15 @@ naoh.addEventListener('click', async () => {
   // await wait(1000)
 
   naohLiquid.style.display = 'block';
-  naohLiquid.style.bottom = `${cylinderRect.bottom - 408}px`;
-  naohLiquid.style.left = `${cylinderRect.left + 13}px`;
-
-  naohLiquid.style.height = '120px';
-  naohLiquid.style.width = '33px';
+  const pos = positionNaohLiquid(0.65); // responsive fit inside cylinder
+  if (pos) {
+    // bottom-up fill: start height 0 then grow to target
+    naohLiquid.style.transition = 'height 1.6s ease-in-out, opacity 0.2s linear';
+    naohLiquid.style.height = '0px';
+    naohLiquid.style.opacity = '1';
+    void naohLiquid.offsetHeight; // force reflow
+    naohLiquid.style.height = `${pos.height}px`;
+  }
   await wait(2000);
   
   // // Remove the stream animation
@@ -259,7 +296,7 @@ naoh.addEventListener('click', async () => {
   naoh.style.transform = `translate(0px, 0px)`;
   await wait(1000);
 
-  instructionText.textContent = "Click on the measuring cylinder to fill NaOH into the burette";
+  instructionText.textContent = "Click on the measuring cylinder to fill 0.1N NaOH into the Burette";
   step++;
   cylinderClickable = true;
 });
@@ -305,8 +342,8 @@ void buretteSol.offsetWidth;
 naohLiquid.classList.add('empty');  
 buretteSol.classList.add('fill');
 // Drain cylinder content while burette fills
-naohLiquid.style.transition = 'height 1.6s linear, opacity 1.6s linear';
-naohLiquid.style.height = '0px';
+naohLiquid.style.transition = 'height 1.6s linear, opacity 0.8s linear';
+naohLiquid.style.height = '0px';     // top-down empty (height decreases from bottom anchor)
 naohLiquid.style.opacity = '0';
 await wait(2000);
 // Ensure cylinder appears empty after pour
@@ -330,7 +367,7 @@ naohLiquid.style.width = '0px';
 
   // instructionText.textContent = "aage ka baad me btata hoon ";
   // Next: Move flask under the burette
-  instructionText.textContent = "Click on the flask to settle it under the burette";
+  instructionText.textContent = "Click on the Flask to settle it under the Burette";
   step = 7;
   cylinderClickable = false;
   flaskClickable = true;
@@ -345,7 +382,7 @@ flask.addEventListener('click', async () => {
 
   // instructionText.textContent = "Flask ab burette ke neeche set ho gaya hai";
   step = 8;
-  instructionText.textContent = "Click on the burette knob to start dropping";
+  instructionText.textContent = "Click on the Burette knob to start dropping";
   nobClickable = true;
 });
 
