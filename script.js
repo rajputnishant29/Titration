@@ -15,6 +15,8 @@ const cylinderContainer = document.getElementById('cylinder-container');
 const funnel = document.getElementById('funnel')
 const buretteSol = document.getElementById('burette-sol');
 const tooltip = document.getElementById('hover-tooltip');
+const timerDisplay = document.getElementById('timer-display');
+const stopBanner = document.getElementById('stop-banner');
 
 let naohTargetHeight = 0;
 
@@ -28,7 +30,7 @@ function positionNaohLiquid(fillRatio = 0.65) {
 
 
   const rawBottom = containerRect.bottom - cylinderRect.bottom;
-  const bottom = Math.max(0, rawBottom - 70); // negative offset ताकि base को छुए
+  const bottom = Math.max(0, rawBottom - 70);
   const left = (cylinderRect.left + (cylinderRect.width - liquidWidth) / 2) - containerRect.left;
 
   naohLiquid.style.position = 'absolute';
@@ -42,7 +44,7 @@ function positionNaohLiquid(fillRatio = 0.65) {
 
 window.addEventListener('resize', () => {
   if (naohLiquid && naohLiquid.style.display !== 'none') {
-    positionNaohLiquid(); // responsive repositioning on resize
+    positionNaohLiquid();
     if (naohTargetHeight) {
       naohLiquid.style.height = `${naohTargetHeight}px`;
     }
@@ -56,6 +58,58 @@ let naohClickable = false;
 let cylinderClickable = false;
 let flaskClickable = false;
 let nobClickable = false;
+let timerInterval = null;
+let timerStart = null;
+let elapsedMs = 0;
+let isBuretteOpen = false;
+let burettePourRAF = null;
+let burettePourStart = null;
+let pourProgressMs = 0;
+let pinkAlertShown = false;
+const pourDurationMs = 6000;
+const pinkThresholdMs = 4000;
+const OBSERVATION_STEP = 9;
+
+function updateTimerDisplay(ms) {
+  if (!timerDisplay) return;
+  const totalMs = Math.max(0, ms);
+  const totalSeconds = Math.floor(totalMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60)
+    .toString()
+    .padStart(2, '0');
+  const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+  const centis = Math.floor((totalMs % 1000) / 10)
+    .toString()
+    .padStart(2, '0');
+  timerDisplay.textContent = `${minutes}:${seconds}.${centis}`;
+}
+
+function startTimer() {
+  if (timerInterval) return;
+  timerStart = Date.now();
+  timerInterval = setInterval(() => {
+    updateTimerDisplay(Date.now() - timerStart + elapsedMs);
+  }, 50);
+}
+
+function stopTimer() {
+  if (!timerInterval) return;
+  elapsedMs += Date.now() - timerStart;
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerStart = null;
+}
+
+function showStopBanner(text = 'STOP') {
+  if (!stopBanner) return;
+  stopBanner.textContent = text;
+  stopBanner.classList.remove('hidden');
+}
+
+function hideStopBanner() {
+  if (!stopBanner) return;
+  stopBanner.classList.add('hidden');
+}
 
 startBtn.addEventListener('click', async () => {
   if (step === 0) {
@@ -76,6 +130,11 @@ startBtn.addEventListener('click', async () => {
     await wait(500); // give fade-out time
     objective.classList.add('hidden');
     pipetteClickable = true;
+  } else if (step === OBSERVATION_STEP) {
+    showObservation();
+    startBtn.classList.add('hidden');
+    instructionText.textContent = "Observation card";
+    step++;
   }
 });
 
@@ -141,15 +200,15 @@ async function step1_addMilkToFlask() {
   const milkBeakerRect = milkBeaker.getBoundingClientRect();
   const flaskRect = flask.getBoundingClientRect();
 
-  const milkX = milkBeakerRect.left - pipetteRect.left + 40;
+  const milkX = milkBeakerRect.left - pipetteRect.left + 55;
   const milkY = milkBeakerRect.top - pipetteRect.top - 80;
 
   pipette.style.transition = pipetteMilk.style.transition = "transform 1s ease-in-out";
 
-  pipette.style.transform = pipetteMilk.style.transform = `translate(0px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(0px, -300px)`;
   await wait(1000);
 
-  pipette.style.transform = pipetteMilk.style.transform = `translate(${milkX}px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${milkX}px, -300px)`;
   await wait(1000);
 
   pipette.style.transform = pipetteMilk.style.transform = `translate(${milkX}px, ${milkY}px)`;
@@ -158,13 +217,13 @@ async function step1_addMilkToFlask() {
   pipetteMilk.classList.add("show");
   await wait(1000);
 
-  const flaskX = flaskRect.left - pipetteRect.left + 30;
+  const flaskX = flaskRect.left - pipetteRect.left + 55;
   const flaskY = flaskRect.top - pipetteRect.top - 80;
 
-  pipette.style.transform = pipetteMilk.style.transform = `translate(${milkX}px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${milkX}px, -300px)`;
   await wait(1000);
 
-  pipette.style.transform = pipetteMilk.style.transform = `translate(${flaskX}px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${flaskX}px, -300px)`;
   await wait(1000);
 
   pipette.style.transform = pipetteMilk.style.transform = `translate(${flaskX}px, ${flaskY}px)`;
@@ -177,7 +236,7 @@ async function step1_addMilkToFlask() {
   flaskWithMilk.classList.add("show");
 
   // First move up
-  pipette.style.transform = pipetteMilk.style.transform = `translate(${flaskX}px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${flaskX}px, -300px)`;
   await wait(1000);
 
   // Then move to initial position
@@ -195,17 +254,17 @@ async function step2_addPhenolphthalein() {
   const flaskRect = flask.getBoundingClientRect();
 
   // Distance to move horizontally & vertically
-  const flaskX = flaskRect.left - capRect.left + 15;
+  const flaskX = flaskRect.left - capRect.left + 30;
   const flaskY = flaskRect.top - capRect.top - 120;
 
   cap.style.transition = "transform 1s ease-in-out";
 
   // Step 1: Move cap up
-  cap.style.transform = `translate(0px, -140px)`;
+  cap.style.transform = `translate(0px, -200px)`;
   await wait(1000);
 
   // Step 2: Move cap left (toward flask)
-  cap.style.transform = `translate(${flaskX}px, -140px)`;
+  cap.style.transform = `translate(${flaskX}px, -200px)`;
   await wait(1000);
 
   // Step 3: Move cap down toward flask
@@ -220,11 +279,11 @@ async function step2_addPhenolphthalein() {
   }
 
   // Step 5: Return cap to original position
-cap.style.transform = `translate(${flaskX}px, -140px)`;
+cap.style.transform = `translate(${flaskX}px, -200px)`;
 await wait(1000);
 
 // Step 5b: Move cap horizontally back
-cap.style.transform = `translate(0px, -140px)`;
+cap.style.transform = `translate(0px, -200px)`;
 await wait(1000);
 
 // Step 5c: Move cap down to original position
@@ -240,17 +299,17 @@ naoh.addEventListener('click', async () => {
   if (!naohClickable || step !== 3) return;
   naohClickable= false
 
-  const finalX = cylinderRect.left - naohRect.left + 65;
-  const finalY = cylinderRect.top - naohRect.top - 90;
+  const finalX = cylinderRect.left - naohRect.left + 90;
+  const finalY = cylinderRect.top - naohRect.top - 150;
 
   naoh.style.transition = 'transform 1s ease-in-out';
 
   // Step 1: Move up
-  naoh.style.transform = `translate(0px, -200px)`;
+  naoh.style.transform = `translate(0px, -240px)`;
   await wait(1000);
 
   // Step 2: Move horizontally
-  naoh.style.transform = `translate(${finalX}px, -200px)`;
+  naoh.style.transform = `translate(${finalX}px, -240px)`;
   await wait(1000);
 
   // Step 3: Move down
@@ -264,13 +323,13 @@ naoh.addEventListener('click', async () => {
   // await wait(1000)
 
   naohLiquid.style.display = 'block';
-  const pos = positionNaohLiquid(0.65); // responsive fit inside cylinder
+  const pos = positionNaohLiquid(0.92); // responsive fit inside cylinder
   if (pos) {
     // bottom-up fill: start height 0 then grow to target
     naohLiquid.style.transition = 'height 1.6s ease-in-out, opacity 0.2s linear';
     naohLiquid.style.height = '0px';
     naohLiquid.style.opacity = '1';
-    void naohLiquid.offsetHeight; // force reflow
+    void naohLiquid.offsetHeight;
     naohLiquid.style.height = `${pos.height}px`;
   }
   await wait(2000);
@@ -285,11 +344,11 @@ naoh.addEventListener('click', async () => {
   await wait(1000);
 
   // Step 5.1: Move up again
-  naoh.style.transform = `translate(${finalX}px, -200px)`;
+  naoh.style.transform = `translate(${finalX}px, -240px)`;
   await wait(1000);
 
   // Step 5.2: Move left
-  naoh.style.transform = `translate(0px, -200px)`;
+  naoh.style.transform = `translate(0px, -240px)`;
   await wait(1000);
 
   // Step 5.3: Move down to original
@@ -306,7 +365,7 @@ cylinderContainer.addEventListener('click', async () => {
   const cylinderRect = cylinder.getBoundingClientRect();
   const funnelRect = funnel.getBoundingClientRect();
 
-  const finalX = funnelRect.right - cylinderRect.right + 160;
+  const finalX = funnelRect.right - cylinderRect.right + 240;
   const finalY = funnelRect.top - cylinderRect.top - 20;
 
   if (!cylinderClickable || step !== 4) return; 
@@ -365,7 +424,6 @@ naohLiquid.style.width = '0px';
   cylinderContainer.style.transform = `translate(0px, 0px)`;
   await wait(1000);
 
-  // instructionText.textContent = "aage ka baad me btata hoon ";
   // Next: Move flask under the burette
   instructionText.textContent = "Click on the Flask to settle it under the Burette";
   step = 7;
@@ -380,7 +438,6 @@ flask.addEventListener('click', async () => {
 
   await step7_moveFlaskUnderBurette();
 
-  // instructionText.textContent = "Flask ab burette ke neeche set ho gaya hai";
   step = 8;
   instructionText.textContent = "Click on the Burette knob to start dropping";
   nobClickable = true;
@@ -405,40 +462,108 @@ const buretteNob = document.getElementById('burette-nob');
 const buretteDrop = document.getElementById('burette-drop');
 const emptyBurette = document.getElementById('empty-Burette');
 
-buretteNob.addEventListener('click', async () => {
-  if (!nobClickable || step !== 8) return;
-  nobClickable = false;
+function startPourAnimation() {
+  buretteSol.style.transition = 'none';
+  burettePourStart = performance.now();
+  const tick = (now) => {
+    if (!isBuretteOpen) return;
+    const elapsed = now - burettePourStart + pourProgressMs;
+    const ratio = Math.min(elapsed / pourDurationMs, 1);
+    buretteSol.style.clipPath = `inset(${ratio * 40}% 0 0 0)`;
+    if (!pinkAlertShown && elapsed >= pinkThresholdMs) {
+      handlePinkTurn();
+    }
+    if (ratio < 1) {
+      burettePourRAF = requestAnimationFrame(tick);
+    } else {
+      closeBurette();
+    }
+  };
+  burettePourRAF = requestAnimationFrame(tick);
+}
 
-  // Open state
-  buretteNob.classList.add('open');
-  // Change burette image to show filling state
-  emptyBurette.src = 'assets/Burette-filling.png';
-  // Start drops animation
-  buretteDrop.classList.add('show');
+function stopPourAnimation() {
+  if (burettePourRAF) cancelAnimationFrame(burettePourRAF);
+  burettePourRAF = null;
+  if (burettePourStart) {
+    pourProgressMs += Math.max(0, performance.now() - burettePourStart);
+  }
+  burettePourStart = null;
+}
 
-  // While drops are pouring, reduce burette solution level
-  const pourDurationMs = 6000; // sync with wait below
-  buretteSol.style.transition = `clip-path ${pourDurationMs}ms linear`;
-  // Reduce visible fill from bottom by ~60%
-  buretteSol.style.clipPath = 'inset(40% 0 0 0)';
+function handlePinkTurn() {
+  pinkAlertShown = true;
 
-  // Keep dropping for a few seconds to simulate flow
-  await wait(pourDurationMs);
-
-  // Optionally stop drops (comment out if continuous needed)
-  buretteDrop.classList.remove('show');
-  buretteNob.classList.remove('open');
-
-  // Change flask image to show titrated state
   const emptyFlask = document.getElementById('empty-flask');
   const filledFlask = document.getElementById('filled-flask');
-  emptyFlask.src = 'assets/conical-flask - titrated.png';
-  filledFlask.classList.remove('show');
 
-  instructionText.textContent = "Completed";
-  step++;
-  // Show Observation table at the end
-  showObservation();
+  // Hide the original milk-filled flask
+  if (filledFlask) {
+    filledFlask.classList.remove('show');
+    filledFlask.style.opacity = '0';
+  }
+
+  // Show the pink titrated flask ONLY
+  if (emptyFlask) {
+    emptyFlask.src = 'assets/conical-flask - titrated.png';
+    emptyFlask.style.opacity = '1';
+  }
+
+  instructionText.textContent = "Solution is Pink, close the knob";
+
+  showStopBanner("STOP - Pink reached");
+}
+
+function openBurette() {
+  isBuretteOpen = true;
+  nobClickable = false;
+  pinkAlertShown = false;
+  hideStopBanner();
+  const emptyFlask = document.getElementById('empty-flask');
+  const filledFlask = document.getElementById('filled-flask');
+  if (emptyFlask) {
+    emptyFlask.src = 'assets/empty-flask.png'; // reset to default
+    emptyFlask.style.opacity = '1'; // ensure visible
+  }
+  if (filledFlask) filledFlask.classList.remove('to-pink');
+  elapsedMs = 0;
+  updateTimerDisplay(0);
+  pourProgressMs = 0;
+  buretteNob.classList.add('open');
+  emptyBurette.src = 'assets/Burette-filling.png';
+  buretteDrop.classList.add('show');
+  instructionText.textContent = "Click on the knon when the solution turned pink";
+  startTimer();
+  startPourAnimation();
+}
+
+function closeBurette() {
+  if (!isBuretteOpen) return;
+  isBuretteOpen = false;
+  stopTimer();
+  stopPourAnimation();
+  buretteDrop.classList.remove('show');
+  buretteNob.classList.remove('open');
+  hideStopBanner();
+  instructionText.textContent = pinkAlertShown
+    ? "Knob Closed , Now click on the  'Next' to see the observation।"
+    : "knob closed";
+  if (pinkAlertShown) {
+    step = OBSERVATION_STEP;
+    startBtn.textContent = 'Next';
+    startBtn.classList.remove('hidden');
+  } else {
+    nobClickable = true;
+  }
+}
+
+buretteNob.addEventListener('click', () => {
+  if (!nobClickable || step !== 8) return;
+  if (!isBuretteOpen) {
+    openBurette();
+  } else {
+    closeBurette();
+  }
 });
 
 // Show observation overlay and compute result

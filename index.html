@@ -8,54 +8,62 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="overflow-hidden bg-slate-950">
-  <div class="bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center shadow-md">
-    <h3 class="text-xl font-bold p-2 text-white ">Instructions : </h3>
-    <h3 class="text-lg text-white"  id="instruction-text">Click on the 'start' button to start the Experiment</h3>
+  <div class="bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center shadow-md px-2 gap-3 relative">
+    <div class="flex items-center gap-2">
+      <h3 class="text-xl font-bold p-2 text-white">Instructions :</h3>
+      <h3 class="text-lg text-white" id="instruction-text">Click on the 'start' button to start the Experiment</h3>
+    </div>
+    <div class="absolute top-1 right-28 md:right-36 flex items-center gap-2 text-white font-semibold bg-indigo-600/40 rounded-lg px-2 py-1">
+      <span>Timer:</span>
+      <span id="timer-display" class="tabular-nums">00:00.00</span>
+      <span id="stop-banner" class="hidden bg-red-600/90 text-white text-xs px-2 py-1 rounded uppercase tracking-wide">STOP</span>
+    </div>
   </div>
   <div class="simulation relative w-full h-screen overflow-hidden max-h-screen">
     
     <img id="bg" src="assets/BG_Img.png" alt="Background" class="absolute inset-0 w-full h-full object-cover z-0" />
 
-    <div class="absolute top-[30%] left-[5%] z-10">
-  <img id="empty-Burette" src="assets/empty-Burette-50ml.png" alt="Burette" class="h-[60vh] hover-item" data-label="Burette" />
+    <div class="absolute top-[25%] left-[5%] z-10">
+  <img id="empty-Burette" src="assets/empty-Burette-50ml.png" alt="Burette" class="h-[70vh] hover-item" data-label="Burette" />
 
-  <div id="burette-fill-container" class="absolute top-0 left-[43.2%] w-[1vw] h-[30vh] overflow-hidden">
+  <div id="burette-fill-container" class="absolute top-0 left-[43.2%] w-[1.3vw] h-[35vh] overflow-hidden">
     <img id="burette-sol" src="assets/Burette-solution.png"
          alt="Burette Solution"
          class="w-full h-full absolute bottom-0 clip-hidden z-10" />
   </div>
 
   <img id="funnel" src="assets/funnel.png" alt="Funnel"
-       class="h-[15vh] absolute top-10 left-[46%] -translate-x-1/2 -translate-y-full hover-item" data-label="Funnel" />
-  <img id="burette-nob" src="assets/Burette-nob.png" alt="Burette Knob" class="absolute top-[53%] left-[52%] h-[5vh] cursor-pointer hover-item" data-label="Burette Knob" />
-  <img id="burette-drop" src="assets/drop.png" alt="Burette Drop" class="absolute top-[60%] left-[46.7%] h-[3vh] hidden hover-item" data-label="Burette Drop" />
+       class="h-[20vh] absolute top-20 left-[46%] -translate-x-1/2 -translate-y-full hover-item" data-label="Funnel" />
+  <img id="burette-nob" src="assets/Burette-nob.png" alt="Burette Knob" class="absolute top-[52.4%] left-[51.5%] h-[6.5vh] cursor-pointer hover-item" data-label="Burette Knob" />
+  <img id="burette-drop" src="assets/drop.png" alt="Burette Drop" class="absolute top-[64%] left-[46.7%] h-[5vh] hidden hover-item" data-label="Burette Drop" />
 </div>
 
-    <div id="flask" class="absolute bottom-[15%] left-[45%] z-10 hover-item" data-label="Flask">
-      <img id="empty-flask" src="assets/empty-flask.png" alt="Empty Flask" class="h-[18vh] hover-item" data-label="Empty Flask" />
-      <img id="filled-flask" src="assets/Flask-Milk.png" alt="Filled Flask" class=" w-[17vw] absolute -bottom-[24%] left-0 opacity-0 hover-item" data-label="Milk in Flask" />
+    <div id="flask" class="absolute bottom-[15%] left-[35%] z-10 hover-item" data-label="Flask">
+      <img id="empty-flask" src="assets/empty-flask.png" alt="Empty Flask" class="h-[28vh] hover-item" data-label="Empty Flask" />
+      <img id="filled-flask" src="assets/Flask-Milk.png" alt="Filled Flask" class=" w-[23vw] absolute -bottom-[24%] left-0 opacity-0 hover-item" data-label="Milk in Flask" />
     </div>
-    <div class="absolute bottom-[15%] left-[35%] z-10">
-      <img id="empty-pippete" src="assets/empty-pippete.png" alt="Empty Pipette" class="h-[20vh] hover-item" data-label="Pipette" />
+    <div class="absolute bottom-[15%] left-[30%] z-10">
+      <img id="empty-pippete" src="assets/empty-pippete.png" alt="Empty Pipette" class="h-[30vh] hover-item" data-label="Pipette" />
       <!-- <img id="pipette-water" src="assets/pippete-solution50ml.png" alt="Pipette Water" class="h-[16vh] w-[0.5vw] absolute bottom-0 left-1/4 opacity-0 z-1" /> -->
-      <img id="pipette-milk" src="assets/pippete-solution50ml-grey.png" alt="Pipette Milk" class="h-[16vh] w-[0.5vw] absolute bottom-0 left-1/4" />
+      <img id="pipette-milk" src="assets/pippete-solution50ml-grey.png" alt="Pipette Milk" class="h-[24vh] w-[0.7vw] absolute bottom-0 left-1/4" />
     </div>
-    <img id="phenolphthelen-bottle" src="assets/phenolphthelein-bottle.png" alt="Phenolphthalein Bottle" class="absolute bottom-[15%] left-[60%] h-[20vh] z-10 hover-item" data-label="Phenolphthalein Bottle" />
-    <img id="phenolphthelein-cap" src="assets/phenolphthelein-cap.png" alt="Phenolphthalein Cap" class="absolute bottom-[20.5%] left-[61.2%] h-[20vh] z-10 hover-item" data-label="Phenolphthalein Cap" />
-    <img id="phenol-drop" src="assets/drop.png" class="absolute h-[5vh] bottom-[40%] left-[46.8%] hidden hover-item" data-label="Phenolphthalein Drop" />
-    <img id="milk-beaker" src="assets/3D-milkBeaker.png" alt="Milk Beaker" class="absolute bottom-[12%] left-[70%] h-[20vh] z-10 hover-item" data-label="Milk Beaker" />
+    <img id="phenolphthelen-bottle" src="assets/phenolphthelein-bottle.png" alt="Phenolphthalein Bottle" class="absolute bottom-[15%] left-[53%] h-[25vh] z-10 hover-item" data-label="Phenolphthalein Bottle" />
+    <img id="phenolphthelein-cap" src="assets/phenolphthelein-cap.png" alt="Phenolphthalein Cap" class="absolute bottom-[21.5%] left-[54.5%] h-[25vh] z-10 hover-item" data-label="Phenolphthalein Cap" />
+    <img id="phenol-drop" src="assets/drop.png" class="absolute h-[5vh] bottom-[40%] left-[37.8%] hidden hover-item" data-label="Phenolphthalein Drop" />
+    <img id="milk-beaker" src="assets/3D-milkBeaker.png" alt="Milk Beaker" class="absolute bottom-[12%] left-[63%] h-[30vh] z-10 hover-item" data-label="Milk Beaker" />
     
-   <div id="cylinder-container" class="relative -bottom-[100%] h-[25vh]">
+   <div id="cylinder-container" class="relative -bottom-[100%] h-[30vh]">
   <img id="cylinder" 
        src="assets/measuring cylinder 10ml.png" 
        alt="Measuring Cylinder" 
-       class="absolute left-[80%] bottom-[160%] h-full z-10 hover-item" data-label="Measuring Cylinder" />
+       class="absolute left-[75%] bottom-[155%] h-full z-10 hover-item" data-label="Measuring Cylinder" />
 
   <div id="naoh-liquid" 
-       class="absolute left-[80.6%] mb-[6.1%]  ">
+       class="absolute left-[80.6%] mb-[4.5%]">
   </div>
+  <div id="naoh-stream"></div>
 </div>
-    <img id="naoh" src="assets/naoh.png" alt="NaOH Bottle" class="absolute top-[40%] left-[90%] h-[20vh] z-10 hover-item" data-label="NaOH Bottle" />
+    <img id="naoh" src="assets/naoh.png" alt="NaOH Bottle" class="absolute top-[30%] left-[84%] h-[25vh] z-10 hover-item" data-label="NaOH Bottle" />
   </div>
 
   <div id="objective" 
@@ -78,28 +86,25 @@
 </button>
   
   <!-- Observation and Calculations: hidden until last step -->
-  <div id="observation" class="hidden fixed inset-0 bg-slate-950/90 text-slate-100 z-50 overflow-auto">
-    <div class="max-w-2xl mx-auto px-6 py-20">
-      <h2 class="text-lg font-bold mb-4">Observation and calculation</h2>
-      <div class="mb-1">
-        <span class="inline-block px-1 py-1 rounded">Observation Table</span>
-      </div>
-      <div class="w-full overflow-x-auto mb-6">
-        <table class="w-full text-left border border-white">
-          <thead>
+  <div id="observation" class="hidden fixed inset-0 flex items-center justify-center z-50">
+    <div class="bg-white text-slate-900 rounded-2xl shadow-2xl w-[90%] max-w-2xl p-6 border border-slate-200">
+      <h2 class="text-xl font-bold mb-3">Observation and calculation</h2>
+      <div class="w-full overflow-x-auto mb-4">
+        <table class="w-full text-left border border-slate-300 text-sm">
+          <thead class="bg-slate-100">
             <tr>
-              <th class="p-1 border border-white">Sample</th>
-              <th class="p-1 border border-white">Weight of sample (g) (W)</th>
-              <th class="p-1 border border-white">Normality of NaOH (N)</th>
-              <th class="p-1 border border-white">Volume of NaOH used (ml) (V)</th>
+              <th class="p-2 border border-slate-300">Sample</th>
+              <th class="p-2 border border-slate-300">Weight of sample (g) (W)</th>
+              <th class="p-2 border border-slate-300">Normality of NaOH (N)</th>
+              <th class="p-2 border border-slate-300">Volume of NaOH used (ml) (V)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="p-1 border border-white">Milk</td>
-              <td class="p-1 border border-white" id="obs-w">10</td>
-              <td class="p-1 border border-white" id="obs-n">0.1</td>
-              <td class="p-1 border border-white" id="obs-v">0.20</td>
+              <td class="p-2 border border-slate-300">Milk</td>
+              <td class="p-2 border border-slate-300" id="obs-w">10</td>
+              <td class="p-2 border border-slate-300" id="obs-n">0.1</td>
+              <td class="p-2 border border-slate-300" id="obs-v">0.20</td>
             </tr>
           </tbody>
         </table>
@@ -112,7 +117,7 @@
         <div>
           Titratable acidity (%, lactic acid) = <span class="align-middle mr-1">0.9 × V × N</span> <span class="align-middle">/ W</span>
         </div>
-        <div class="text-sm text-gray-300">
+        <div class="text-sm text-gray-500">
           Where, V = Volume of NaOH used; N = Normality of NaOH solution; W = Weight of milk
         </div>
       </div>

@@ -39,6 +39,11 @@
     cursor: pointer;
 }
 
+#filled-flask.to-pink {
+    opacity: 1;
+    animation: toPink 2s forwards ease;
+}
+
 #flask {
     transform-origin: bottom center;
 }
@@ -95,6 +100,16 @@
 
 #naoh-liquid.empty {
   animation: drainCylinder 3s steps(8) forwards;
+}
+
+.pinkify {
+  filter: hue-rotate(-25deg) saturate(1.4);
+  transition: filter 1.4s ease;
+}
+
+@keyframes toPink {
+  0%   { filter: none; }
+  100% { filter: hue-rotate(-25deg) saturate(1.4); }
 }
 
 @keyframes drainCylinder {
