@@ -341,6 +341,13 @@ naoh.addEventListener('click', async () => {
   // Step 5: Reset path in reverse
   // Remove tilt
   naoh.classList.remove('tilt');
+  // Re-apply explicit transform to maintain position after class removal
+  naoh.style.transform = `translate(${targetX}px, ${targetY}px)`;
+  await wait(50); // slight delay to ensure style applies
+
+  // 6. Lift Back
+  naoh.style.transition = 'transform 1s ease-in-out';
+  naoh.style.transform = `translate(${targetX}px, ${liftY}px)`;
   await wait(1000);
 
   // Step 5.1: Move up again
