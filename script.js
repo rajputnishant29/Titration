@@ -29,6 +29,7 @@ const milkBeaker = document.getElementById("milk-beaker");
 const flaskDiv = document.getElementById("flask"); // The wrapper
 const filledFlask = document.getElementById("filled-flask");
 const emptyFlask = document.getElementById("empty-flask");
+const titratedFlask = document.getElementById("titrated-flask");
 const phenolCap = document.getElementById("phenolphthelein-cap");
 const phenolDrop = document.getElementById("phenol-drop");
 const naoh = document.getElementById("naoh");
@@ -150,10 +151,10 @@ async function handlePipetteClick() {
   pipette.style.transition = pipetteMilk.style.transition = "transform 1s ease-in-out";
 
   // Up
-  pipette.style.transform = pipetteMilk.style.transform = `translate(0px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(0px, -350px)`;
   await wait(1000);
   // Over
-  pipette.style.transform = pipetteMilk.style.transform = `translate(${toMilkX}px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${toMilkX}px, -350px)`;
   await wait(1000);
   // Down
   pipette.style.transform = pipetteMilk.style.transform = `translate(${toMilkX}px, ${toMilkY}px)`;
@@ -164,15 +165,15 @@ async function handlePipetteClick() {
   await wait(1000);
 
   // Up
-  pipette.style.transform = pipetteMilk.style.transform = `translate(${toMilkX}px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${toMilkX}px, -350px)`;
   await wait(1000);
 
   // 2. To Flask
-  const toFlaskX = flaskRect.left - pipetteRect.left + 50;
-  const toFlaskY = flaskRect.top - pipetteRect.top - 80;
+  const toFlaskX = flaskRect.left - pipetteRect.left + 55;
+  const toFlaskY = flaskRect.top - pipetteRect.top - 120;
 
   // Over
-  pipette.style.transform = pipetteMilk.style.transform = `translate(${toFlaskX}px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${toFlaskX}px, -350px)`;
   await wait(1000);
   // Down
   pipette.style.transform = pipetteMilk.style.transform = `translate(${toFlaskX}px, ${toFlaskY}px)`;
@@ -183,9 +184,10 @@ async function handlePipetteClick() {
   pipetteMilk.classList.add("pour");
   await wait(1000);
   filledFlask.classList.add("show"); // Show milk in flask
+  // emptyFlask.style.opacity = '0'; // REMOVED: Keep empty flask visible as filledFlask is overlay only
 
   // Reset
-  pipette.style.transform = pipetteMilk.style.transform = `translate(${toFlaskX}px, -200px)`;
+  pipette.style.transform = pipetteMilk.style.transform = `translate(${toFlaskX}px, -350px)`;
   await wait(1000);
   pipette.style.transform = pipetteMilk.style.transform = `translate(0, 0)`;
   await wait(1000);
@@ -207,10 +209,10 @@ async function handlePhenolClick() {
   const targetX = flaskRect.left - capRect.left + 30;
 
   phenolCap.style.transition = "transform 1s ease-in-out";
-  phenolCap.style.transform = `translate(0px, -200px)`;
+  phenolCap.style.transform = `translate(0px, -300px)`;
   await wait(1000);
 
-  phenolCap.style.transform = `translate(${targetX}px, -200px)`;
+  phenolCap.style.transform = `translate(${targetX}px, -300px)`;
   await wait(1000);
 
   // Drop
@@ -251,37 +253,76 @@ async function handleNaohClick() {
   const naohRect = naoh.getBoundingClientRect();
   const cylRect = cylinder.getBoundingClientRect();
 
-  const moveX = cylRect.left - naohRect.left + 90;
-  const moveY = cylRect.top - naohRect.top - 150;
+  // Helper to get current transform X/Y (even if from CSS class)
+  const style = window.getComputedStyle(naoh);
+  const matrix = new DOMMatrixReadOnly(style.transform);
+  const startX = matrix.m41;
+  const startY = matrix.m42;
+
+  // Calculate target deltas relative to current visual position
+  const deltaX = cylRect.left - naohRect.left + 90;
+  const deltaY = cylRect.top - naohRect.top - 150;
+
+  // New target transforms (relative to layout origin = start + delta)
+  const liftY = startY - 240;
+  const targetX = startX + deltaX;
+  const targetY = startY + deltaY;
 
   naoh.style.transition = 'transform 1s ease-in-out';
-  naoh.style.transform = `translate(0px, -240px)`;
-  await wait(1000);
-  naoh.style.transform = `translate(${moveX}px, -240px)`;
-  await wait(1000);
-  naoh.style.transform = `translate(${moveX}px, ${moveY}px)`;
+
+  // 1. Lift
+  naoh.style.transform = `translate(${startX}px, ${liftY}px)`;
   await wait(1000);
 
-  naoh.style.setProperty('--x', `${moveX}px`);
-  naoh.style.setProperty('--y', `${moveY}px`);
+  // 2. Move Horizontal
+  naoh.style.transform = `translate(${targetX}px, ${liftY}px)`;
+  await wait(1000);
+
+  // 3. Move Down to Pour
+  naoh.style.transform = `translate(${targetX}px, ${targetY}px)`;
+  await wait(1000);
+
+  // 4. Tilt (using CSS variable for final position)
+  naoh.style.setProperty('--x', `${targetX}px`);
+  naoh.style.setProperty('--y', `${targetY}px`);
   naoh.classList.add('tilt');
 
   // Fill Cyl
   naohLiquid.style.display = 'block';
   // Simple height calc
   naohLiquid.style.height = '0px';
-  naohLiquid.style.width = '24px'; // approximate
+  naohLiquid.style.width = '64px'; // approximate
   requestAnimationFrame(() => {
-    naohLiquid.style.height = '60px'; // fill logic
+    naohLiquid.style.height = '250px'; // fill logic
   });
   await wait(2000);
 
+  // Update NaOH Flask to 150ml
+  const naohSolution = document.getElementById('naoh-solution');
+  if (naohSolution) {
+    naohSolution.src = 'assets/volumetric flask-sol-blue-150ml.png';
+  }
+
+  // 5. Untilt
   naoh.classList.remove('tilt');
+  // Re-apply explicit transform to maintain position after class removal
+  naoh.style.transform = `translate(${targetX}px, ${targetY}px)`;
+  await wait(50); // slight delay to ensure style applies
+
+  // 6. Lift Back
+  naoh.style.transition = 'transform 1s ease-in-out';
+  naoh.style.transform = `translate(${targetX}px, ${liftY}px)`;
   await wait(1000);
-  naoh.style.transform = `translate(${moveX}px, -240px)`;
+
+  // 7. Return to Start
+  naoh.style.transform = `translate(${startX}px, ${startY}px)`;
   await wait(1000);
-  naoh.style.transform = `translate(0px, 0px)`;
-  await wait(1000);
+
+  // 8. Reset to CSS class (removes inline style)
+  naoh.style.transform = '';
+  // Ensure we clean up custom properties if needed, though harmless
+  naoh.style.removeProperty('--x');
+  naoh.style.removeProperty('--y');
 
   titrationState.naohInCylinder = true;
   prepState.isAnimating = false;
@@ -295,8 +336,8 @@ async function handleCylinderClick() {
   const cylRect = cylinderContainer.getBoundingClientRect();
   const funRect = funnel.getBoundingClientRect();
 
-  const moveX = funRect.right - cylRect.right + 260; // Approximate adjustment
-  const moveY = funRect.top - cylRect.top - 20;
+  const moveX = funRect.right - cylRect.right + 500; // Approximate adjustment
+  const moveY = funRect.top - cylRect.top + 70;
 
   cylinderContainer.style.transition = 'transform 1s ease-in-out';
   cylinderContainer.style.transform = `translate(0px, -300px)`;
@@ -312,9 +353,14 @@ async function handleCylinderClick() {
   await wait(1000);
 
   // Fill Burette
-  buretteSol.classList.add('fill');
-  naohLiquid.classList.add('empty'); // drain anim
-  await wait(2000);
+  naohLiquid.classList.add('empty'); // Start draining (3s)
+
+  // Slight delay for liquid to reach burette
+  setTimeout(() => {
+    buretteSol.classList.add('fill'); // Start filling (3s)
+  }, 500);
+
+  await wait(3500); // Wait for drain + buffer
 
   cylinderContainer.classList.remove('tilt');
   await wait(1000);
@@ -335,7 +381,7 @@ async function handleFlaskMoveClick() {
   const flaskRect = flaskEl.getBoundingClientRect();
 
   const targetX = (buretteRect.left + buretteRect.width * 0.5) - (flaskRect.left + flaskRect.width * 0.5);
-  const targetY = (buretteRect.bottom - 40) - flaskRect.bottom; // Adjust to fit under tip
+  const targetY = (buretteRect.bottom - 0) - flaskRect.bottom; // Adjust to fit under tip
 
   flaskEl.style.transition = 'transform 1s ease-in-out';
   flaskEl.style.transform = `translate(${targetX}px, ${targetY}px)`;
@@ -346,81 +392,144 @@ async function handleFlaskMoveClick() {
   setInstruction("Click on the Burette knob to open it and start titration");
 }
 
-function handleNobClick() {
-  if (currentStep !== 2 || !titrationState.flaskUnder) return;
+// --- TITRATION ANIMATION VARIABLES ---
+let burettePourRAF = null;
+let burettePourStart = null;
+let pourProgressMs = 0;
+let isBuretteOpen = false;
+let nobClickable = true;
+let pinkAlertShown = false;
+const pourDurationMs = 16000; // 16s for full 16ml? 
+const pinkThresholdMs = 16000; // Turns pink at end
 
-  if (!titrationState.titrationRunning && !titrationState.isPink) {
-    // START TITRATION
-    startTitration();
-  } else if (titrationState.titrationRunning) {
-    // STOP TITRATION
-    stopTitration();
+const emptyBurette = document.getElementById("empty-Burette"); // Ensure this is selected
+
+function handleNobClick() {
+  if (currentStep !== 2 || !titrationState.flaskUnder || !nobClickable) return;
+
+  if (!isBuretteOpen) {
+    openBurette();
+  } else {
+    closeBurette();
   }
 }
 
-function startTitration() {
-  titrationState.titrationRunning = true;
+function openBurette() {
+  isBuretteOpen = true;
+  pinkAlertShown = false;
+
+  // ensure visual state
+  if (emptyFlask) {
+    emptyFlask.src = 'assets/empty-flask.png';
+    emptyFlask.style.opacity = '1';
+  }
+
   buretteNob.classList.add('open');
+  emptyBurette.src = 'assets/Burette-filling.png'; // Swap to filling image
   buretteDrop.classList.add('show');
-  setInstruction("Titration in progress... Click knob to stop.");
 
-  if (titrationState.intervalId) clearInterval(titrationState.intervalId);
-
-  titrationState.intervalId = setInterval(() => {
-    titrationState.volume += 0.5;
-    if (titrationState.volume > titrationState.maxVolume) {
-      titrationState.volume = titrationState.maxVolume;
-    }
-
-    // Update Display
-    liveTitrationEl.textContent = titrationState.volume.toFixed(1);
-
-    // Check End Condition
-    if (titrationState.volume >= 16.0) {
-      handlePinkReached();
-    }
-
-  }, 500); // 0.5ml every 500ms -> 16ml takes 16s (too slow?). User said "Slowly". 
-  // 16 / 0.5 = 32 steps. 32 * 0.5 = 16 seconds. Acceptable.
+  startPourAnimation();
+  setInstruction("Titration in progress... Click knob to stop when solution turns pink.");
 }
 
-function stopTitration() {
-  titrationState.titrationRunning = false;
-  buretteNob.classList.remove('open');
-  buretteDrop.classList.remove('show');
-  if (titrationState.intervalId) clearInterval(titrationState.intervalId);
+function closeBurette() {
+  if (!isBuretteOpen) return;
+  isBuretteOpen = false;
 
-  if (titrationState.isPink) {
+  stopPourAnimation();
+
+  buretteDrop.classList.remove('show');
+  buretteNob.classList.remove('open');
+  emptyBurette.src = 'assets/empty-Burette-50ml.png'; // Revert image
+
+  if (pinkAlertShown) {
     setInstruction("Titration complete. Click 'NEXT' to see observation.");
     btnNextWrapper.classList.remove('hidden');
   } else {
-    setInstruction("Click knob to resume titration.");
+    setInstruction("Knob closed. Click to resume.");
   }
 }
 
-function handlePinkReached() {
-  titrationState.isPink = true;
+function startPourAnimation() {
+  buretteSol.style.transition = 'none';
+  burettePourStart = performance.now();
+  let lastSwirlTime = 0;
 
-  // Turn Pink
+  const tick = (now) => {
+    if (!isBuretteOpen) return;
+
+    // progress
+    const elapsed = now - burettePourStart + pourProgressMs;
+    const ratio = Math.min(elapsed / pourDurationMs, 1);
+
+    // Update visual liquid
+    buretteSol.style.clipPath = `inset(${ratio * 40}% 0 0 0)`;
+
+    // Update Volume display (Smoother)
+    titrationState.volume = ratio * 16.0;
+    liveTitrationEl.textContent = titrationState.volume.toFixed(2);
+
+    // Near Endpoint Swirl Logic (Starts after 14mL / ~87% progress)
+    if (titrationState.volume > 14.0) {
+      // Burette drop cycle is 0.8s. Trigger swirl when drop "hits"
+      // We check elapsed modulo 800ms
+      const cyclePos = elapsed % 800;
+      if (cyclePos > 600 && (now - lastSwirlTime > 400)) {
+        triggerSwirl();
+        lastSwirlTime = now;
+      }
+    }
+
+    if (!pinkAlertShown && elapsed >= pinkThresholdMs) {
+      handlePinkTurn();
+    }
+
+    if (ratio < 1) {
+      burettePourRAF = requestAnimationFrame(tick);
+    } else {
+      if (!pinkAlertShown) closeBurette();
+    }
+  };
+  burettePourRAF = requestAnimationFrame(tick);
+}
+
+function triggerSwirl() {
+  if (!filledFlask) return;
+  filledFlask.classList.remove('swirl');
+  // Trigger reflow
+  void filledFlask.offsetWidth;
+  filledFlask.classList.add('swirl');
+}
+
+function stopPourAnimation() {
+  if (burettePourRAF) cancelAnimationFrame(burettePourRAF);
+  burettePourRAF = null;
+  if (burettePourStart) {
+    pourProgressMs += Math.max(0, performance.now() - burettePourStart);
+  }
+  burettePourStart = null;
+}
+
+function handlePinkTurn() {
+  pinkAlertShown = true;
+
+  // Smooth Cross-fade
   if (filledFlask) {
-    filledFlask.classList.add('to-pink');
-    // Or swap image
-    // filledFlask.src = 'assets/conical-flask - titrated.png'; 
-    // But using CSS filter on existing image is smoother if supported, relying on css class I added.
+    filledFlask.style.opacity = '0';
   }
 
-  setInstruction("Click on the Burette knob to close it and stop titration");
-  // Don't auto-stop, wait for user to click knob as per instructions: "instructions displayed 'Click on the Burette knob to close it...'"
-  // But we stop incrementing volume?? 
-  // User says: "When pink appears (just reaching the volume 16 mL), instructions displayed 'Click on the Burette knob...'"
-  // So we pause the counter? or does it overflow?
-  // Logic: "just reaching 16ml". I will pause logic at 16.
-  if (titrationState.intervalId) clearInterval(titrationState.intervalId);
+  if (titratedFlask) {
+    titratedFlask.style.opacity = '1';
+    titratedFlask.classList.add('show');
+  }
 
-  // But the drops should probably continue until closed?
-  // Visual drops continue, but vol stays at 16? 
-  // I'll leave drops running until user clicks close.
+  // We actually don't NEED to swap the empty flask src anymore 
+  // because titratedFlask is an overlay, but let's keep it for safety if user expects it
+  // or just hide it.
+
+  setInstruction("Solution is Pink, close the knob");
 }
+
 
 // --- STEP 3 LOGIC (OBSERVATION) ---
 function handleCheckAnswer() {
