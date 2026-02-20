@@ -101,8 +101,17 @@ function updateView() {
   // Update Body Class
   body.className = `overflow-hidden bg-slate-950 step-${currentStep}`;
 
-  // Reset Next Button
-  btnNextWrapper.classList.add('hidden');
+  // Individual Button Visibility
+  const btnStart = document.getElementById('btn-start');
+  const btnNext = document.getElementById('btn-next');
+
+  if (currentStep === 0) {
+    btnStart.classList.remove('hidden');
+    btnNext.classList.add('hidden');
+  } else {
+    btnStart.classList.add('hidden');
+    btnNext.classList.add('hidden'); // Ensure NEXT is hidden at start of step
+  }
 
   // Text Instructions
   switch (currentStep) {
@@ -240,7 +249,7 @@ async function handlePhenolClick() {
 function checkStep1Completion() {
   if (prepState.milkAdded && prepState.phenolAdded) {
     setInstruction("Preparation complete. Click 'NEXT' to proceed.");
-    btnNextWrapper.classList.remove('hidden');
+    btnNext.classList.remove('hidden');
   }
 }
 
@@ -444,7 +453,7 @@ function closeBurette() {
 
   if (pinkAlertShown) {
     setInstruction("Titration complete. Click 'NEXT' to see observation.");
-    btnNextWrapper.classList.remove('hidden');
+    btnNext.classList.remove('hidden');
   } else {
     setInstruction("Knob closed. Click to resume.");
   }
@@ -518,14 +527,16 @@ function handlePinkTurn() {
     filledFlask.style.opacity = '0';
   }
 
+  if (emptyFlask) {
+    emptyFlask.style.transition = 'opacity 1s ease-in-out';
+    emptyFlask.style.opacity = '0';
+  }
+
   if (titratedFlask) {
     titratedFlask.style.opacity = '1';
     titratedFlask.classList.add('show');
+    titratedFlask.style.pointerEvents = 'auto'; // Enable interaction for tooltips if needed
   }
-
-  // We actually don't NEED to swap the empty flask src anymore 
-  // because titratedFlask is an overlay, but let's keep it for safety if user expects it
-  // or just hide it.
 
   setInstruction("Solution is Pink, close the knob");
 }

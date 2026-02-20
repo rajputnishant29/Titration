@@ -32,7 +32,8 @@
   <!-- Main Simulation Area -->
   <div id="simulation-area" class="simulation relative w-full h-screen overflow-hidden max-h-screen">
 
-    <img id="bg" src="assets/bgImageNew.png" alt="Background" class="absolute inset-0 w-full h-full object-cover z-0" />
+    <img id="bg" src="assets/bgImageNewW.png" alt="Background"
+      class="absolute inset-0 w-full h-full object-cover z-0" />
 
     <!-- Page 1: Intro Objects (Everything visible initially via CSS) -->
     <!-- We will use classes on #simulation-area or body to control visibility -->
@@ -131,17 +132,13 @@
 
   </div> <!-- End Simulation Area -->
 
-  <!-- CONTROL BUTTONS -->
-  <div id="controls" class="fixed bottom-10 w-full flex justify-center z-50 pointer-events-none">
+  <div id="next-container" class="fixed bottom-10 right-10 z-50">
     <button id="btn-start"
-      class="pointer-events-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
+      class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
       START
     </button>
-  </div>
-
-  <div id="next-container" class="fixed bottom-10 right-10 z-50 hidden">
     <button id="btn-next"
-      class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
+      class="hidden bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
       NEXT
     </button>
   </div>
