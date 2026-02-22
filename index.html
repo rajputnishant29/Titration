@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial- scale=1.0" />
   <title>Titratable Acidity of the Milk</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -91,9 +91,13 @@
     </div>
 
     <!-- Milk Beaker Group -->
-    <div id="milk-group" class="group-milk transition-opacity duration-300">
-      <img id="milk-beaker" src="assets/3D-milkBeaker.png" alt="Milk Beaker"
-        class="absolute bottom-[12%] left-[63%] h-[30vh] z-10 hover-item" data-label="Milk Sample" />
+    <div id="milk-group" class="group-milk transition-opacity duration-300 absolute bottom-[15%] left-[62%] h-[24vh]">
+      <div class="relative h-full w-fit flex items-end justify-center">
+        <img id="milk-beaker-overlay" src="assets/milk_beaker_overlay.png" alt="Milk"
+          class="absolute bottom-[1%] w-[84%] h-[80%] z-0 object-fill pointer-events-none" />
+        <img id="milk-beaker" src="assets/milk_beaker.png" alt="Milk Beaker"
+          class="relative h-full w-auto z-10 hover-item" data-label="Milk Sample" />
+      </div>
     </div>
 
     <!-- Cylinder & NaOH Group -->
