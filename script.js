@@ -298,11 +298,11 @@ async function handleNaohClick() {
 
   // Fill Cyl
   naohLiquid.style.display = 'block';
-  // Simple height calc
-  naohLiquid.style.height = '0px';
-  naohLiquid.style.width = '64px'; // approximate
+  // Start empty (liquid clipped to bottom)
+  naohLiquid.style.clipPath = 'inset(100% 0 0 0)';
   requestAnimationFrame(() => {
-    naohLiquid.style.height = '250px'; // fill logic
+    // Fill to top
+    naohLiquid.style.clipPath = 'inset(0 0 0 0)';
   });
   await wait(2000);
 

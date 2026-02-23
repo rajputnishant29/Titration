@@ -107,12 +107,13 @@
 }
 
 #naoh-liquid {
-  width: 4px;
-  height: 0px;
-  background: rgba(178, 213, 227, 0.65);
-  bottom: 0;
-  z-index: 100;
-  transition: height 2s ease-in-out;
+  position: absolute;
+  bottom: 24%;
+  left: 76.3%;
+  height: 95%;
+  z-index: 0;
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 2s ease-in-out;
 }
 
 #naoh-liquid.empty {
@@ -273,10 +274,8 @@
 /* =========================================
    STEP-BASED VISIBILITY CONTROL
    ========================================= */
-
 /* Default: Everything Hidden unless specified */
 /* We toggle opacity to allow transitions, and pointer-events to prevent clicking hidden items */
-
 /* Step 0: Intro (Show All) */
 /* Actually, Step 0 serves as a gallery. */
 body.step-0 .group-burette,
@@ -383,6 +382,5 @@ body.step-2 #titration-table-container {
 }
 
 /* Show small table */
-
 /* Step 3: Observation (Handled by overlay #observation-screen) */
 /* Background can stay as Step 2 or blur */
