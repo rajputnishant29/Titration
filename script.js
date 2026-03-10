@@ -154,7 +154,7 @@ async function handlePipetteClick() {
   const flaskRect = flaskDiv.getBoundingClientRect();
 
   // 1. To Milk
-  const toMilkX = milkRect.left - pipetteRect.left + 60;
+  const toMilkX = (milkRect.left + milkRect.width / 2) - (pipetteRect.left + pipetteRect.width / 2) - 50;
   const toMilkY = milkRect.top - pipetteRect.top - 80;
 
   pipette.style.transition = pipetteMilk.style.transition = "transform 1s ease-in-out";
@@ -178,8 +178,8 @@ async function handlePipetteClick() {
   await wait(1000);
 
   // 2. To Flask
-  const toFlaskX = flaskRect.left - pipetteRect.left + 55;
-  const toFlaskY = flaskRect.top - pipetteRect.top - 120;
+  const toFlaskX = (flaskRect.left + flaskRect.width / 2) - (pipetteRect.left + pipetteRect.width / 2);
+  const toFlaskY = flaskRect.top - pipetteRect.top - 80;
 
   // Over
   pipette.style.transform = pipetteMilk.style.transform = `translate(${toFlaskX}px, -350px)`;
@@ -345,8 +345,8 @@ async function handleCylinderClick() {
   const cylRect = cylinderContainer.getBoundingClientRect();
   const funRect = funnel.getBoundingClientRect();
 
-  const moveX = funRect.right - cylRect.right + 500; // Approximate adjustment
-  const moveY = funRect.top - cylRect.top + 70;
+  const moveX = (funRect.left + funRect.width / 2) - (cylRect.left + cylRect.width / 2) - 390;
+  const moveY = funRect.top - cylRect.top + 20;
 
   cylinderContainer.style.transition = 'transform 1s ease-in-out';
   cylinderContainer.style.transform = `translate(0px, -300px)`;
@@ -359,7 +359,12 @@ async function handleCylinderClick() {
   cylinderContainer.style.setProperty('--x', `${moveX}px`);
   cylinderContainer.style.setProperty('--y', `${moveY}px`);
   cylinderContainer.classList.add('tilt');
-  await wait(1000);
+  await wait(500);
+
+  // Show stream
+  const naohStream = document.getElementById('naoh-stream');
+  if (naohStream) naohStream.classList.add('pouring');
+  await wait(500);
 
   // Fill Burette
   naohLiquid.classList.add('empty'); // Start draining (3s)
@@ -369,7 +374,9 @@ async function handleCylinderClick() {
     buretteSol.classList.add('fill'); // Start filling (3s)
   }, 500);
 
-  await wait(3500); // Wait for drain + buffer
+  await wait(3000); // Wait for drain
+  if (naohStream) naohStream.classList.remove('pouring');
+  await wait(500);
 
   cylinderContainer.classList.remove('tilt');
   await wait(1000);
