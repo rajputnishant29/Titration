@@ -267,11 +267,9 @@
   0% {
     transform: translate(var(--x), var(--y)) rotate(0deg);
   }
-
   50% {
-    transform: translate(var(--x), var(--y)) rotate(-20deg);
+    transform: translate(var(--x), var(--y)) rotate(-10deg);
   }
-
   100% {
     transform: translate(var(--x), var(--y)) rotate(-20deg);
   }
