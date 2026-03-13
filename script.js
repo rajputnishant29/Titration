@@ -361,11 +361,6 @@ async function handleCylinderClick() {
   cylinderContainer.classList.add('tilt');
   await wait(500);
 
-  // Show stream
-  // const naohStream = document.getElementById('naoh-stream');
-  // if (naohStream) naohStream.classList.add('pouring');
-  // await wait(500);
-
   // Fill Burette
   naohLiquid.classList.add('empty'); // Start draining (3s)
 
@@ -375,7 +370,7 @@ async function handleCylinderClick() {
   }, 500);
 
   await wait(3000); // Wait for drain
-  if (naohStream) naohStream.classList.remove('pouring');
+
   await wait(500);
 
   cylinderContainer.classList.remove('tilt');
