@@ -137,7 +137,7 @@
 
 @keyframes drainCylinder {
   0% {
-    clip-path: inset(0% 0 0 0);
+    clip-path: inset(9% 0 0 0);
   }
 
   100% {

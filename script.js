@@ -301,8 +301,8 @@ async function handleNaohClick() {
   // Start empty (liquid clipped to bottom)
   naohLiquid.style.clipPath = 'inset(100% 0 0 0)';
   requestAnimationFrame(() => {
-    // Fill to top
-    naohLiquid.style.clipPath = 'inset(0 0 0 0)';
+    // Fill to 50ml mark (approx 18% gap from top)
+    naohLiquid.style.clipPath = 'inset(9% 0 0 0)';
   });
   await wait(2000);
 
